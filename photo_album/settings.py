@@ -23,7 +23,11 @@ SECRET_KEY = config('SECRET_KEY', default=os.environ.get('DJANGO_SECRET_KEY', 'i
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
+# ALLOWED_HOSTS configuration
+_allowed_hosts_env = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,photo-album-9fb1.onrender.com')
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(',') if h.strip()]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'photo-album-9fb1.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
