@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-xl-8 col-lg-10">
+      <div class="card rounded-4 shadow-sm border-0">
+        <div class="card-body p-5">
+          <p class="text-uppercase text-primary fw-semibold mb-3">Photo upload</p>
+          <h2 class="fw-bold mb-4">Add a new photo</h2>
+          <form method="post" enctype="multipart/form-data" class="row g-4">{% csrf_token %}
+            <div class="col-12">{{ form.non_field_errors }}</div>
+            {% for field in form.visible_fields %}
+              <div class="col-12">
+                <label class="form-label">{{ field.label_tag }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+                {{ field }}
+                <div class="form-text text-danger">{{ field.errors }}</div>
+              </div>
+            {% endfor %}
+            <div class="col-12 d-flex flex-column flex-sm-row gap-3 pt-3">
+              <button type="submit" class="btn btn-primary btn-lg">Upload</button>
+              <a class="btn btn-outline-secondary btn-lg" href="{% url 'albums:detail' album_pk %}">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

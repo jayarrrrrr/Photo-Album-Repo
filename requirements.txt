@@ -1,0 +1,8 @@
+Django>=4.2
+psycopg2-binary
+dj-database-url
+cloudinary
+django-cloudinary-storage
+gunicorn
+python-dotenv
+python-decouple

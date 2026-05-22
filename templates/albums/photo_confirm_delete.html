@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card rounded-4 shadow-sm border-0 p-4">
+    <h2 class="fw-bold mb-3">Confirm delete photo</h2>
+    <p class="text-secondary mb-4">This action cannot be undone. Do you want to remove this photo from the album?</p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="d-flex gap-3 flex-wrap">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a class="btn btn-outline-secondary" href="{% url 'albums:detail' object.album.pk %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}
