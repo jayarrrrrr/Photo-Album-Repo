@@ -1,6 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.http import Http404
 from .models import Album, Photo
 from .forms import AlbumForm, PhotoForm
 
@@ -84,6 +87,13 @@ class PhotoCreateView(LoginRequiredMixin, CreateView):
 class PhotoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Photo
     template_name = 'albums/photo_confirm_delete.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except Http404:
+            messages.warning(request, "Photo not found. It may have been deleted already.")
+            return redirect('albums:list')
 
     def test_func(self):
         obj = self.get_object()
