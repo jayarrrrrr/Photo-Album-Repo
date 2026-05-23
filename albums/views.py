@@ -84,6 +84,20 @@ class PhotoCreateView(LoginRequiredMixin, CreateView):
         return reverse('albums:detail', kwargs={'pk': self.kwargs['album_pk']})
 
 
+class PhotoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Photo
+    form_class = PhotoForm
+    template_name = 'albums/photo_form.html'
+
+    def test_func(self):
+        obj = self.get_object()
+        user = self.request.user
+        return obj.album.owner == user or user.groups.filter(name='AlbumAdmin').exists() or user.is_superuser or user.is_superuser
+
+    def get_success_url(self):
+        return reverse('albums:detail', kwargs={'pk': self.object.album.pk})
+
+
 class PhotoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Photo
     template_name = 'albums/photo_confirm_delete.html'

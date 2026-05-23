@@ -37,7 +37,10 @@
               <div class="card-body p-3">
                 <p class="small text-secondary mb-3">{{ photo.caption|default:"No caption" }}</p>
                 {% if user == album.owner or user.is_superuser or user.groups.all|length > 0 %}
-                  <a class="btn btn-sm btn-outline-danger" href="{% url 'albums:photo_delete' photo.pk %}">Remove</a>
+                  <div class="d-flex gap-2">
+                    <a class="btn btn-sm btn-outline-primary" href="{% url 'albums:photo_edit' photo.pk %}">Edit</a>
+                    <a class="btn btn-sm btn-outline-danger" href="{% url 'albums:photo_delete' photo.pk %}">Remove</a>
+                  </div>
                 {% endif %}
               </div>
             </div>
