@@ -95,10 +95,31 @@ class PhotoDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             messages.warning(request, "Photo not found. It may have been deleted already.")
             return redirect('albums:list')
 
+    def get_object(self, queryset=None):
+        # Prefer an already-loaded object (set in test_func) to avoid additional DB hits
+        obj = getattr(self, 'object', None)
+        if obj is not None:
+            return obj
+        # Safely fetch the photo without raising Http404 here
+        pk = self.kwargs.get('pk')
+        return Photo.objects.filter(pk=pk).select_related('album__owner').first()
+
     def test_func(self):
-        obj = self.get_object()
+        # Avoid calling get_object() which may raise Http404; fetch safely instead
+        pk = self.kwargs.get('pk')
+        obj = Photo.objects.filter(pk=pk).select_related('album__owner').first()
+        if not obj:
+            # Let handle_no_permission handle the user-visible response
+            return False
+        # cache the object for later use by get_object/delete
+        self.object = obj
         user = self.request.user
         return obj.album.owner == user or user.groups.filter(name='AlbumAdmin').exists() or user.is_superuser
+
+    def handle_no_permission(self):
+        # Called when test_func returns False — redirect with a helpful message
+        messages.warning(self.request, "Photo not found or you don't have permission to delete it.")
+        return redirect('albums:list')
 
     def get_success_url(self):
         return reverse('albums:detail', kwargs={'pk': self.object.album.pk})
