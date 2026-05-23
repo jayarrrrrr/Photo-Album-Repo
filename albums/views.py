@@ -1,3 +1,4 @@
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
@@ -82,6 +83,16 @@ class PhotoCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('albums:detail', kwargs={'pk': self.kwargs['album_pk']})
+
+
+class SignUpView(CreateView):
+    form_class = UserCreationForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Account created successfully. You can now log in.')
+        return super().form_valid(form)
 
 
 class PhotoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
