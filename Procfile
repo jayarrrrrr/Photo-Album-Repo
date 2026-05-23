@@ -1,1 +1,1 @@
-web: gunicorn photo_album.wsgi --log-file -
+web: python manage.py migrate && gunicorn photo_album.wsgi --log-file -
