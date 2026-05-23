@@ -78,16 +78,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'photo_album.wsgi.application'
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
 if DATABASE_URL and dj_database_url:
-    DATABASES = {'default': dj_database_url.parse(DATABASE_URL)}
-elif DATABASE_URL and not dj_database_url:
-    # dj-database-url not installed; fall back to SQLite for local development
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
 else:
     DATABASES = {
